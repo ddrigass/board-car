@@ -43,10 +43,15 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         const char* horizontalRotation = json["horizontal"];
         Serial.println(atoi(horizontalRotation));
         ServoState = atoi(horizontalRotation);
-        // if (strcmp(action, "toggle") == 0) {
-        //     led.on = !led.on;
-        //     notifyClients();
-        // }
+
+        const char* verticalDirection = json["vertical"];
+        Serial.println(atoi(verticalDirection));
+        MotorState = atoi(verticalDirection);
+
+        const char* verticalSpeed = json["verticalSpeed"];
+        Serial.println(atoi(verticalSpeed));
+
+//        analogWrite(motorD6, atoi(verticalSpeed) );
         
     }
 }

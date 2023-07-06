@@ -67,6 +67,12 @@ function initJoystick() {
     psp.y = coords.y;
 
     // for moving
+    if (coords.y > 0) {
+      move.vertical = 2;
+    } else {
+      move.vertical = 0;
+    }
+    move.verticalSpeed = Math.round(Math.abs(2.55 * coords.y));
     move.horizontal = 180 - Math.round(1.8 * (coords.x + 100) / 2);
     send();
 
@@ -76,6 +82,7 @@ function initJoystick() {
   
   mc.on("panend", function(ev) {
     move.horizontal = 90;
+    move.vertical = 1;
     send();
 
     psp.alpha = 0.25;
@@ -122,7 +129,7 @@ function onMessage(event) {
 }
 function onLoad(event) {
   initWebSocket();
-  // initButtons();
+  initButtons();
 
   initJoystick();
 }
