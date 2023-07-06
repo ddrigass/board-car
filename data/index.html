@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,9 +8,15 @@
     <link rel="stylesheet" href="./main.css">
     <title>Document</title>
 </head>
+
 <body>
     <div class="backgroud">
-        <div id="state"></div>
+        <div class="container space-top">
+            <div class="center-align">
+                <canvas id="joystick" height="300" width="300"></canvas>
+            </div>
+        </div>
+        <!-- <div id="state"></div>
         <div class="left-side">
             <div class="button-area to-top">
                 <div class="button">
@@ -33,9 +40,13 @@
                     <div class="unicode">→</div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
+    <script src="./libs/jquery.js"></script>
+    <script src="./libs/hammer.js"></script>
+    <script src="./libs/createjs.min.js"></script>
     <script src="./main.js"></script>
 </body>
+
 </html>

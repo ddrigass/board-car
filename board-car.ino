@@ -3,13 +3,15 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <Servo.h>
+#include <ArduinoJson.h>
+
 // Replace with your network credentials
 const char* ssid = "ESPControl";
 const char* password = "0123456789";
 String messageData = "";
 
-int MotorState = 0;
-int ServoState = 0;
+int MotorState = 1;
+int ServoState = 90;
 const int motorD8 = 15;
 const int motorD7 = 13;
 const int motorD6 = 12;
@@ -28,18 +30,25 @@ void notifyClients() {
 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
+
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
-    data[len] = 0;
-    // vertical:123
-    messageData = (char*)data;
-    MotorState = (int)messageData[0] - 48;
-    ServoState = (int)messageData[1] - 48;
-    Serial.println(MotorState);
-//    if (strcmp(, "vertical") == 0) {
-//      ledState = !ledState;
-//      notifyClients();
-//    }
-  }
+        StaticJsonDocument<256> json;
+        DeserializationError err = deserializeJson(json, data);
+        if (err) {
+            Serial.print(F("deserializeJson() failed with code "));
+            Serial.println(err.c_str());
+            return;
+        }
+        
+        const char* horizontalRotation = json["horizontal"];
+        Serial.println(atoi(horizontalRotation));
+        ServoState = atoi(horizontalRotation);
+        // if (strcmp(action, "toggle") == 0) {
+        //     led.on = !led.on;
+        //     notifyClients();
+        // }
+        
+    }
 }
 
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
@@ -111,7 +120,16 @@ void setup(){
   });
 
   server.on("/main.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/main.js", String(), false, processor);
+    request->send(SPIFFS, "/main.js", "text/javascript");
+  });
+  server.on("/libs/jquery.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/libs/jquery.js", "text/javascript");
+  });
+  server.on("/libs/hammer.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/libs/hammer.js", "text/javascript");
+  });
+  server.on("/libs/createjs.min.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/libs/createjs.min.js", "text/javascript");
   });
 
   server.on("/main.css", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -145,16 +163,17 @@ void loop() {
     break;
   }
   
-  switch(ServoState) {
-    case 0:
-     servo.write(0);
-    break;
-    case 1:
-      servo.write(90);
-    break;  
-    case 2:
-      servo.write(180);
-    break;
-  }
+  servo.write(ServoState);
+  // switch(ServoState) {
+  //   case 0:
+  //    servo.write(0);
+  //   break;
+  //   case 1:
+  //     servo.write(90);
+  //   break;  
+  //   case 2:
+  //     servo.write(180);
+  //   break;
+  // }
   
 }
