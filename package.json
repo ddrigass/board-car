@@ -17,6 +17,5 @@
   },
   "homepage": "https://github.com/ddrigass/board-car#readme",
   "dependencies": {
-    "http-server": "^14.1.1"
   }
 }
